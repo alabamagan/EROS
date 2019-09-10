@@ -2,6 +2,7 @@
 
 This algorithm was implemented with regards to the paper written by Stephen Smith [1].
 
+
 ## Usage
 
 ```python
