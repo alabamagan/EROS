@@ -25,14 +25,17 @@ def resample_at_angle(im_2D, phi, cent_of_rotation=None):
 
 
 
-def eros(im_3D, angular_res):
+def eros(im_3D, angular_res, angle_range=None):
     out = []
     for z in range(len(im_3D)):
         # z = 24
         cx, cy = None, None
         row, col = im_3D[z].shape
         mid = col // 2
-        angles = np.arange(180 // angular_res)*angular_res
+        if angle_range is None:
+            angles = np.arange(180 // angular_res)*angular_res
+        else:
+            angles = np.linspace(angle_range[0], angle_range[1], angular_res)
         peak_scores = []
         for phi in angles:
             if cx is None:
