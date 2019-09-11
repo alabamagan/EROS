@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 
+
 def compute_mask(im_3D):
     assert isinstance(im_3D, np.ndarray), "Non-numpy input encountered."
     counts, bin = np.histogram(im_3D, bins=100)
@@ -9,13 +10,19 @@ def compute_mask(im_3D):
     threshold = im_min + 0.05*(im_max - im_min)
     return im_3D > threshold
 
-def resample_at_angle(im_2D, phi, cent_of_rotation=None):
+
+def resample_at_angle(im_2D, phi, cent_of_rotation=None, compute_com_by_mask=False):
     row, col = im_2D.shape
 
     if cent_of_rotation is None:
-        moments = cv2.moments(im_2D)
-        cx = int(moments['m10']/moments['m00'])
-        cy = int(moments['m01']/moments['m00'])
+        if compute_com_by_mask:
+            moments = cv2.moments(compute_com_by_mask)
+            cx = int(moments['m10']/moments['m00'])
+            cy = int(moments['m01']/moments['m00'])
+        else:
+            moments = cv2.moments(im_2D)
+            cx = int(moments['m10']/moments['m00'])
+            cy = int(moments['m01']/moments['m00'])
     else:
         cx, cy = cent_of_rotation
 
@@ -26,6 +33,20 @@ def resample_at_angle(im_2D, phi, cent_of_rotation=None):
 
 
 def eros(im_3D, angular_res, angle_range=None):
+    """
+    Description
+    -----------
+        This function returns the best symmetry line angle that passes through the center of mass
+        of the input image. The center of mass was calculated slice by slice.
+
+    :param im_3D:       sitk.Image
+    :param angular_res: (float|int)
+    :param angle_range: tuple, default to None
+    :return:
+    """
+    mask_3D = compute_mask(im_3D)
+    im_3D[np.invert(mask_3D)] = 0
+
     out = []
     for z in range(len(im_3D)):
         # z = 24
@@ -39,7 +60,7 @@ def eros(im_3D, angular_res, angle_range=None):
         peak_scores = []
         for phi in angles:
             if cx is None:
-                rot, cx, cy = resample_at_angle(im_3D[z], phi)
+                rot, cx, cy = resample_at_angle(im_3D[z], phi, compute_com_by_mask=mask_3D[z])
             else:
                 rot, cx, cy = resample_at_angle(im_3D[z], phi, [cx, cy])
 
