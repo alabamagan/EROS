@@ -11,11 +11,11 @@ def compute_mask(im_3D):
     return im_3D > threshold
 
 
-def resample_at_angle(im_2D, phi, cent_of_rotation=None, compute_com_by_mask=False):
+def resample_at_angle(im_2D, phi, cent_of_rotation=None, compute_com_by_mask=None):
     row, col = im_2D.shape
 
     if cent_of_rotation is None:
-        if compute_com_by_mask:
+        if not compute_com_by_mask is None:
             moments = cv2.moments(compute_com_by_mask)
             cx = int(moments['m10']/moments['m00'])
             cy = int(moments['m01']/moments['m00'])
