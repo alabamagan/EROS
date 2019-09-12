@@ -1,6 +1,21 @@
 import numpy as np
 import cv2
 
+class eros_obj(object):
+    def __init__(self, res):
+        super(eros_obj, self).__init__()
+        self.res = res
+        self.angles = np.array([row[0] for row in self.res])
+        self.coms = np.array([row[1] for row in self.res])
+
+
+    def get_mean_angle(self):
+        return self.angles.mean()
+
+    def get_mean_com(self):
+        return np.array([self.coms[:,0].mean(), self.coms[:,1].mean()])
+
+
 
 def compute_mask(im_3D):
     assert isinstance(im_3D, np.ndarray), "Non-numpy input encountered."
@@ -46,6 +61,7 @@ def eros(im_3D, angular_res, angle_range=None):
     """
     mask_3D = compute_mask(im_3D)
     im_3D[np.invert(mask_3D)] = 0
+    # mask_3D = mask_3D.astype('float')
 
     out = []
     for z in range(len(im_3D)):
@@ -60,7 +76,7 @@ def eros(im_3D, angular_res, angle_range=None):
         peak_scores = []
         for phi in angles:
             if cx is None:
-                rot, cx, cy = resample_at_angle(im_3D[z], phi, compute_com_by_mask=mask_3D[z])
+                rot, cx, cy = resample_at_angle(im_3D[z], phi)
             else:
                 rot, cx, cy = resample_at_angle(im_3D[z], phi, [cx, cy])
 
@@ -82,5 +98,5 @@ def eros(im_3D, angular_res, angle_range=None):
 
         best_angle = angles[np.argmax(peak_scores)]
         out.append([best_angle, (cx,cy)])
-    return out
+    return eros_obj(out)
 
