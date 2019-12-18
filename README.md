@@ -21,4 +21,4 @@ out, cx, cy = eros(npim, 2) # The format of the output is [[angle, (com_x, com_y
 Requires cv2
 
 ## Reference
-1. Smith, Stephen, and Mark Jenkinson. "Accurate robust symmetry estimation." International Conference on Medical Image Computing and Computer-Assisted Intervention. Springer, Berlin, Heidelberg, 1999.
+1. Smith, Stephen, and Mark Jenkinson. "Accurate robust symmetry estimation." International Conference on Medical Image Computing and Computer-Assisted Intervention. Springer, Berlin, Heidelberg, 1999..
