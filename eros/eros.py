@@ -29,17 +29,21 @@ def compute_mask(im_3D):
 def resample_at_angle(im_2D, phi, cent_of_rotation=None, compute_com_by_mask=None):
     row, col = im_2D.shape
 
-    if cent_of_rotation is None:
-        if not compute_com_by_mask is None:
-            moments = cv2.moments(compute_com_by_mask)
-            cx = int(moments['m10']/moments['m00'])
-            cy = int(moments['m01']/moments['m00'])
+    try:
+        if cent_of_rotation is None:
+            if not compute_com_by_mask is None:
+                moments = cv2.moments(compute_com_by_mask)
+                cx = int(moments['m10']/moments['m00'])
+                cy = int(moments['m01']/moments['m00'])
+            else:
+                moments = cv2.moments(im_2D)
+                cx = int(moments['m10']/moments['m00'])
+                cy = int(moments['m01']/moments['m00'])
         else:
-            moments = cv2.moments(im_2D)
-            cx = int(moments['m10']/moments['m00'])
-            cy = int(moments['m01']/moments['m00'])
-    else:
-        cx, cy = cent_of_rotation
+            cx, cy = cent_of_rotation
+    except:
+        print("Failed to compute moments, using image center as moment center.")
+        cx, cy = row // 2, col // 2
 
     A = cv2.getRotationMatrix2D((cx, cy), phi, 1)
     warpped_im_2D = cv2.warpAffine(im_2D, A, (row, col))
