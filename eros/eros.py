@@ -76,7 +76,7 @@ def eros(im_3D, angular_res, angle_range=None):
         if angle_range is None:
             angles = np.arange(180 // angular_res)*angular_res
         else:
-            angles = np.linspace(angle_range[0], angle_range[1], (angle_range[1] - angle_range[0]) / angular_res)
+            angles = np.linspace(angle_range[0], angle_range[1], (angle_range[1] - angle_range[0]) // angular_res)
         peak_scores = []
         for phi in angles:
             if cx is None:
